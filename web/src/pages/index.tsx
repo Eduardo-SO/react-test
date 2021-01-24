@@ -6,13 +6,6 @@ import axios from 'axios'
 
 import { Container } from '../styles'
 import FeaturedPlaylists from '../components/FeaturedPlaylists'
-import FilterField from '../components/FilterField'
-
-interface SpotifyResponse {
-  access_token?: string
-  token_type?: string
-  expires_in?: string
-}
 
 interface Playlist {
   name: string
@@ -46,76 +39,68 @@ interface Filter {
 
 const Home: React.FC = () => {
   const router = useRouter()
-  const [spotifyResponse, setSpotifyResponse] = useState({} as SpotifyResponse)
   const [spotifyResponseDenied, setSpotifyResponseDenied] = useState(false)
-  const [filters, setFilters] = useState<Filter[]>([])
   const [spotifyPlaylists, setSpotifyPlaylists] = useState({} as Featured)
+  const [filters, setFilters] = useState<Filter[]>([])
+  const [token, setToken] = useState('')
+
+  const [country, setCountry] = useState('BR')
+  const [locale, setLocale] = useState('pt_BR')
+  const [limit, setLimit] = useState('10')
+  const [date, setDate] = useState('10')
+  const [offset, setOffset] = useState('5')
 
   useEffect(() => {
     const path = router.asPath
+    const [firstParam] = path.split('&')
+    const [param, value] = firstParam.split('=')
 
-    const [full_access_token, full_token_type, full_expires_in] = path.split(
-      '&'
-    )
-
-    if (full_access_token && full_token_type && full_expires_in) {
-      const [, access_token] = full_access_token.split('=')
-      const [, token_type] = full_token_type.split('=')
-      const [, expires_in] = full_expires_in.split('=')
-
-      setSpotifyResponseDenied(false)
-      setSpotifyResponse({
-        access_token,
-        token_type,
-        expires_in
-      })
-
-      getPlaylists(access_token)
+    if (value === 'access_denied') {
+      setSpotifyResponseDenied(true)
       return
     }
 
-    const [, error] = path.split('=')
-    error && setSpotifyResponseDenied(true)
-  }, [])
+    if (param === '/#access_token') {
+      setSpotifyResponseDenied(false)
+      setToken(value)
+      getFilters()
+      getPlaylists(value)
+    }
+  }, [country, locale, date, limit, offset, token])
 
-  useEffect(() => {
-    async function getFilters() {
-      const response = await axios(
-        'http://www.mocky.io/v2/5a25fade2e0000213aa90776',
+  const getPlaylists = useCallback(
+    async spotifyToken => {
+      const response = await axios.get(
+        'https://api.spotify.com/v1/browse/featured-playlists',
         {
-          method: 'GET'
+          params: {
+            country,
+            locale,
+            limit,
+            date,
+            offset
+          },
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + spotifyToken
+          },
+          data: {}
         }
       )
 
-      setFilters(response.data.filters)
-    }
+      setSpotifyPlaylists(response.data)
+    },
+    [country, locale, date, limit, offset]
+  )
 
-    getFilters()
-  }, [])
-
-  const getPlaylists = useCallback(async token => {
-    const response = await axios(
-      'https://api.spotify.com/v1/browse/featured-playlists',
-      {
-        params: {
-          country: 'BR',
-          locale: 'pt_BR',
-          limit: '10',
-          offset: '5'
-        },
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token
-        },
-        data: {},
-        method: 'GET'
-      }
+  const getFilters = useCallback(async () => {
+    const response = await axios.get(
+      'http://www.mocky.io/v2/5a25fade2e0000213aa90776'
     )
 
-    setSpotifyPlaylists(response.data)
+    setFilters(response.data.filters)
   }, [])
-
   return (
     <Container>
       <Head>
@@ -128,13 +113,67 @@ const Home: React.FC = () => {
       {spotifyPlaylists.playlists ? (
         <>
           {filters.map(filter => (
-            <FilterField
-              key={filter.id}
-              id={filter.id}
-              name={filter.name}
-              validation={filter.validation}
-              values={filter.values}
-            />
+            <div key={filter.id}>
+              {filter.id === 'locale' && (
+                <select
+                  id={filter.id}
+                  name={filter.id}
+                  onChange={e => setLocale(e.target.value)}
+                >
+                  {filter.values.map(value => (
+                    <option key={value.value} value={value.value}>
+                      {value.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {filter.id === 'country' && (
+                <select
+                  id={filter.id}
+                  name={filter.id}
+                  onChange={e => setCountry(e.target.value)}
+                >
+                  {filter.values.map(value => (
+                    <option
+                      key={value.value}
+                      value={value.value === 'en_US' ? 'US' : value.value}
+                    >
+                      {value.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {filter.id === 'timestamp' && (
+                <input
+                  type="date"
+                  id={filter.id}
+                  name={filter.id}
+                  onChange={e => setDate(e.target.value)}
+                />
+              )}
+
+              {filter.id === 'limit' && (
+                <input
+                  type="number"
+                  id={filter.id}
+                  name={filter.id}
+                  min={filter.validation.min}
+                  max={filter.validation.max}
+                  onChange={e => setLimit(e.target.value)}
+                />
+              )}
+
+              {filter.id === 'offset' && (
+                <input
+                  type="number"
+                  id={filter.id}
+                  name={filter.id}
+                  onChange={e => setOffset(e.target.value)}
+                />
+              )}
+            </div>
           ))}
 
           <FeaturedPlaylists

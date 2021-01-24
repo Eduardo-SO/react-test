@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Container } from './styles'
 
 interface Playlist {
@@ -16,10 +15,6 @@ interface Featured {
 }
 
 const FeaturedPlaylists: React.FC<Featured> = ({ playlists, message }) => {
-  useEffect(() => {
-    console.log(playlists, message)
-  }, [])
-
   return (
     <Container>
       <h1>{message}</h1>

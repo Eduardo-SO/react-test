@@ -1,3 +1,4 @@
+import { useCallback, useRef } from 'react'
 import { Container } from './styles'
 
 interface FilterProps {
@@ -22,12 +23,15 @@ const FilterField: React.FC<FilterProps> = ({
   validation,
   values
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const selectRef = useRef<HTMLSelectElement>(null)
+
   return (
     <Container>
       <h1>{name}</h1>
 
       {values && (
-        <select id={id} name={id}>
+        <select id={id} name={id} ref={selectRef}>
           {values.map(value => (
             <option key={value.value} value={value.value}>
               {value.name}
@@ -36,7 +40,9 @@ const FilterField: React.FC<FilterProps> = ({
         </select>
       )}
 
-      {id === 'timestamp' && <input type="date" id={id} name={id} />}
+      {id === 'timestamp' && (
+        <input type="date" id={id} name={id} ref={inputRef} />
+      )}
 
       {id === 'limit' && (
         <input
@@ -45,10 +51,13 @@ const FilterField: React.FC<FilterProps> = ({
           name={id}
           min={validation.min}
           max={validation.max}
+          ref={inputRef}
         />
       )}
 
-      {id === 'offset' && <input type="number" id={id} name={id} />}
+      {id === 'offset' && (
+        <input type="number" id={id} name={id} ref={inputRef} />
+      )}
     </Container>
   )
 }
