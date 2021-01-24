@@ -6,6 +6,7 @@ import axios from 'axios'
 
 import { Container } from '../styles'
 import FeaturedPlaylists from '../components/FeaturedPlaylists'
+import FilterField from '../components/FilterField'
 
 interface SpotifyResponse {
   access_token?: string
@@ -27,11 +28,27 @@ interface Featured {
   }
 }
 
+interface Filter {
+  id: string
+  name: string
+  values?: {
+    value: string
+    name: string
+  }[]
+  validation?: {
+    primitiveType: string
+    min?: number
+    max?: number
+    entityType?: string
+    pattern?: string
+  }
+}
+
 const Home: React.FC = () => {
   const router = useRouter()
   const [spotifyResponse, setSpotifyResponse] = useState({} as SpotifyResponse)
   const [spotifyResponseDenied, setSpotifyResponseDenied] = useState(false)
-
+  const [filters, setFilters] = useState<Filter[]>([])
   const [spotifyPlaylists, setSpotifyPlaylists] = useState({} as Featured)
 
   useEffect(() => {
@@ -61,31 +78,43 @@ const Home: React.FC = () => {
     error && setSpotifyResponseDenied(true)
   }, [])
 
-  const getPlaylists = useCallback(
-    async token => {
+  useEffect(() => {
+    async function getFilters() {
       const response = await axios(
-        'https://api.spotify.com/v1/browse/featured-playlists',
+        'http://www.mocky.io/v2/5a25fade2e0000213aa90776',
         {
-          params: {
-            country: 'BR',
-            locale: 'pt_BR',
-            limit: '10',
-            offset: '5'
-          },
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token
-          },
-          data: {},
           method: 'GET'
         }
       )
 
-      setSpotifyPlaylists(response.data)
-    },
-    [spotifyResponse]
-  )
+      setFilters(response.data.filters)
+    }
+
+    getFilters()
+  }, [])
+
+  const getPlaylists = useCallback(async token => {
+    const response = await axios(
+      'https://api.spotify.com/v1/browse/featured-playlists',
+      {
+        params: {
+          country: 'BR',
+          locale: 'pt_BR',
+          limit: '10',
+          offset: '5'
+        },
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        data: {},
+        method: 'GET'
+      }
+    )
+
+    setSpotifyPlaylists(response.data)
+  }, [])
 
   return (
     <Container>
@@ -96,18 +125,30 @@ const Home: React.FC = () => {
 
       <h1>Spotify playlists</h1>
 
-      {spotifyResponseDenied && <h1>Acesso negado!</h1>}
-
       {spotifyPlaylists.playlists ? (
-        <FeaturedPlaylists
-          playlists={spotifyPlaylists.playlists}
-          message={spotifyPlaylists.message}
-        />
+        <>
+          {filters.map(filter => (
+            <FilterField
+              key={filter.id}
+              id={filter.id}
+              name={filter.name}
+              validation={filter.validation}
+              values={filter.values}
+            />
+          ))}
+
+          <FeaturedPlaylists
+            playlists={spotifyPlaylists.playlists}
+            message={spotifyPlaylists.message}
+          />
+        </>
       ) : (
         <a href="https://accounts.spotify.com/authorize?client_id=50eb067b28e0491380591d6b7884165d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=token">
           Logar
         </a>
       )}
+
+      {spotifyResponseDenied && <h1>Acesso negado!</h1>}
     </Container>
   )
 }
