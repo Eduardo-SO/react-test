@@ -17,7 +17,7 @@ interface Featured {
 const FeaturedPlaylists: React.FC<Featured> = ({ playlists, message }) => {
   return (
     <Container>
-      <h1>{message}</h1>
+      <h2>{message}</h2>
 
       {playlists.items.map((playlist, index) => (
         <div key={index}>

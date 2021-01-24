@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-
 import axios from 'axios'
 
-import { Container } from '../styles'
+import formatDate from '../utils/formatDate'
+
+import { Container, Content } from '../styles'
 import FeaturedPlaylists from '../components/FeaturedPlaylists'
 
 interface Playlist {
@@ -47,7 +48,7 @@ const Home: React.FC = () => {
   const [country, setCountry] = useState('BR')
   const [locale, setLocale] = useState('pt_BR')
   const [limit, setLimit] = useState('10')
-  const [date, setDate] = useState('10')
+  const [date, setDate] = useState(formatDate(new Date().toString()))
   const [offset, setOffset] = useState('5')
 
   useEffect(() => {
@@ -90,6 +91,8 @@ const Home: React.FC = () => {
       )
 
       setSpotifyPlaylists(response.data)
+
+      console.log(country, locale, date, limit, offset)
     },
     [country, locale, date, limit, offset]
   )
@@ -108,86 +111,112 @@ const Home: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>Spotify playlists</h1>
+      <Content>
+        <h1>Spotify playlists</h1>
 
-      {spotifyPlaylists.playlists ? (
-        <>
-          {filters.map(filter => (
-            <div key={filter.id}>
-              {filter.id === 'locale' && (
-                <select
-                  id={filter.id}
-                  name={filter.id}
-                  onChange={e => setLocale(e.target.value)}
-                >
-                  {filter.values.map(value => (
-                    <option key={value.value} value={value.value}>
-                      {value.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-
-              {filter.id === 'country' && (
-                <select
-                  id={filter.id}
-                  name={filter.id}
-                  onChange={e => setCountry(e.target.value)}
-                >
-                  {filter.values.map(value => (
-                    <option
-                      key={value.value}
-                      value={value.value === 'en_US' ? 'US' : value.value}
+        {spotifyPlaylists.playlists ? (
+          <>
+            {filters.map(filter => (
+              <div key={filter.id}>
+                {filter.id === 'locale' && (
+                  <>
+                    <h3>{filter.name}</h3>
+                    <select
+                      id={filter.id}
+                      name={filter.id}
+                      onChange={e => setLocale(e.target.value)}
                     >
-                      {value.name}
-                    </option>
-                  ))}
-                </select>
-              )}
+                      {filter.values.map(value => (
+                        <option key={value.value} value={value.value}>
+                          {value.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
 
-              {filter.id === 'timestamp' && (
-                <input
-                  type="date"
-                  id={filter.id}
-                  name={filter.id}
-                  onChange={e => setDate(e.target.value)}
-                />
-              )}
+                {filter.id === 'country' && (
+                  <>
+                    <h3>{filter.name}</h3>
 
-              {filter.id === 'limit' && (
-                <input
-                  type="number"
-                  id={filter.id}
-                  name={filter.id}
-                  min={filter.validation.min}
-                  max={filter.validation.max}
-                  onChange={e => setLimit(e.target.value)}
-                />
-              )}
+                    <select
+                      id={filter.id}
+                      name={filter.id}
+                      onChange={e => setCountry(e.target.value)}
+                    >
+                      {filter.values.map(value => (
+                        <option
+                          key={value.value}
+                          value={value.value === 'en_US' ? 'US' : value.value}
+                        >
+                          {value.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
 
-              {filter.id === 'offset' && (
-                <input
-                  type="number"
-                  id={filter.id}
-                  name={filter.id}
-                  onChange={e => setOffset(e.target.value)}
-                />
-              )}
-            </div>
-          ))}
+                {filter.id === 'timestamp' && (
+                  <>
+                    <h3>{filter.name}</h3>
+                    <input
+                      type="date"
+                      id={filter.id}
+                      name={filter.id}
+                      onChange={e => setDate(e.target.value)}
+                      value={date}
+                    />
+                  </>
+                )}
 
-          <FeaturedPlaylists
-            playlists={spotifyPlaylists.playlists}
-            message={spotifyPlaylists.message}
-          />
-        </>
-      ) : (
-        <a href="https://accounts.spotify.com/authorize?client_id=50eb067b28e0491380591d6b7884165d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=token">
-          Logar
-        </a>
-      )}
+                {filter.id === 'limit' && (
+                  <>
+                    <h3>{filter.name}</h3>
+                    <input
+                      type="number"
+                      id={filter.id}
+                      name={filter.id}
+                      min={filter.validation.min}
+                      max={filter.validation.max}
+                      onChange={e =>
+                        e.target.value > '0' && setLimit(e.target.value)
+                      }
+                      value={limit}
+                      contentEditable="false"
+                    />
+                  </>
+                )}
 
-      {spotifyResponseDenied && <h1>Acesso negado!</h1>}
+                {filter.id === 'offset' && (
+                  <>
+                    <h3>{filter.name}</h3>
+                    <input
+                      type="number"
+                      id={filter.id}
+                      name={filter.id}
+                      onChange={e =>
+                        e.target.value > '0' && setOffset(e.target.value)
+                      }
+                      value={offset}
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+
+            <FeaturedPlaylists
+              playlists={spotifyPlaylists.playlists}
+              message={spotifyPlaylists.message}
+            />
+          </>
+        ) : (
+          <a href="https://accounts.spotify.com/authorize?client_id=50eb067b28e0491380591d6b7884165d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=token">
+            Logar
+          </a>
+        )}
+
+        {spotifyResponseDenied && <h1>Acesso negado!</h1>}
+      </Content>
     </Container>
   )
 }

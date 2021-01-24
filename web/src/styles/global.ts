@@ -4,6 +4,7 @@ export default createGlobalStyle`
 * {
   margin: 0;
   padding: 0;
+  outline: none;
   box-sizing: border-box;
 }
 body {
@@ -13,9 +14,10 @@ body {
 
 body,
 input,
+select,
 button,
 textarea {
-  color: #b3b3b3;
+  color: #fff;
   -webkit-font-smoothing: antialiased;
 }
 
