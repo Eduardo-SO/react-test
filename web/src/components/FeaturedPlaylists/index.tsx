@@ -1,9 +1,11 @@
-import { Container } from './styles'
+import { Container, Playlists, PlaylistItem } from './styles'
 
 interface Playlist {
   name: string
   description: string
-  images: string[]
+  images: {
+    url: string
+  }[]
   tracks: string
 }
 
@@ -19,12 +21,17 @@ const FeaturedPlaylists: React.FC<Featured> = ({ playlists, message }) => {
     <Container>
       <h2>{message}</h2>
 
-      {playlists.items.map((playlist, index) => (
-        <div key={index}>
-          <strong>{playlist.name}</strong>
-          <p>{playlist.description}</p>
-        </div>
-      ))}
+      <Playlists>
+        {playlists.items.map((playlist, index) => (
+          <PlaylistItem key={index}>
+            <img src={playlist.images[0].url} alt={playlist.name} />
+            <div>
+              <strong>{playlist.name}</strong>
+              <p>{playlist.description}</p>
+            </div>
+          </PlaylistItem>
+        ))}
+      </Playlists>
     </Container>
   )
 }
