@@ -61,6 +61,8 @@ const Home: React.FC = () => {
   const [offset, setOffset] = useState(0)
   const [page, setPage] = useState(1)
 
+  const [refresh, setRefresh] = useState(1)
+
   useEffect(() => {
     const path = router.asPath
     const [firstParam] = path.split('&')
@@ -77,7 +79,7 @@ const Home: React.FC = () => {
       getFilters()
       getPlaylists(value)
     }
-  }, [country, locale, date, limit, offset, token])
+  }, [country, locale, date, limit, offset, token, refresh])
 
   const getPlaylists = useCallback(
     async spotifyToken => {
@@ -112,6 +114,13 @@ const Home: React.FC = () => {
 
     setFilters(response.data.filters)
   }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefresh(refresh => refresh + 1)
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [refresh])
 
   const handleUpdateLimit = useCallback((limit: string) => {
     const parsedLimit = parseInt(limit)
