@@ -155,6 +155,7 @@ const Home: React.FC = () => {
                     <select
                       id={filter.id}
                       name={filter.id}
+                      value={locale}
                       onChange={e => setLocale(e.target.value)}
                     >
                       {filter.values.map(value => (
@@ -172,6 +173,7 @@ const Home: React.FC = () => {
                     <select
                       id={filter.id}
                       name={filter.id}
+                      value={country}
                       onChange={e => setCountry(e.target.value)}
                     >
                       {filter.values.map(value => (
