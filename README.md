@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Market Media - React
 
-## Getting Started
+<div align="center">
+  <img src=".github/react-test.gif" />
+</div>
 
-First, run the development server:
+## Descrição
+
+Assim que o usuário abrir a aplicação, um botão contendo um link para autorizar o acesso ao Spotify será exibido
+
+Caso o usuário não conceda a autorização, será exibida uma mensagem informando que é necessário autorizar sua conta para visualizar as playlists
+
+Ao autorizar a aplicação, serão exibidos filtros para as playlists, esses filtros estão sendo montados a partir da API fornecida.
+
+Quando o valor de um filtro for alterado, o retorno da API de playlists será atualizado automaticamente
+
+A cada 30 segundos, os dados das playlists são atualizados
+
+## Detalhes da arquitetura
+
+  A aplicação está utilizando os React Hooks para evitar renderizações desnecessárias dos componentes
+
+  ESLint, Prettier e o Editor Config foram implementados para manter a organização do código, mesmo se várias pessoas estiverem contribuindo para este projeto
+
+  Pensando na escalabilidade da aplicação, ela foi desenvolvida utilizando TypeScript
+
+  As requisições às APIs foram realizadas através da biblioteca Axios
+
+  A aplicação está totalmente responsiva com o uso da unidade de medida `rem`, além do display `grid` e `flex`
+
+## Ferramentas utilizadas
+
+- Typescript
+- NextJS
+- styled-components
+- Hooks
+- Axios
+- ESLint
+- Prettier
+- EditorConfig
+
+## Iniciando a aplicação
+Para iniciar a aplicação, basta instalar as dependências e rodar o comando:
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
