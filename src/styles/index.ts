@@ -85,7 +85,7 @@ export const Login = styled.div`
   flex-direction: column;
 
   width: 100%;
-  max-width: 144rem;
+  max-width: 114rem;
 
   h1 {
     max-width: 50rem;
