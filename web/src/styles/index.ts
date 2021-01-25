@@ -3,16 +3,11 @@ import styled from 'styled-components'
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 
   min-height: 100vh;
   padding: 1.6rem;
-
-  h1 {
-    font-size: 3.2rem;
-    margin-bottom: 3.2rem;
-  }
 `
 
 export const Content = styled.div`
@@ -86,22 +81,32 @@ export const FieldContainer = styled.div`
 `
 
 export const Login = styled.div`
-  max-width: 50rem;
-
   display: flex;
   flex-direction: column;
 
-  margin-top: -2.4rem;
+  width: 100%;
+  max-width: 144rem;
+
+  h1 {
+    max-width: 50rem;
+    margin-bottom: 3.2rem;
+    font-size: 10.4rem;
+    line-height: 100%;
+  }
 
   p {
+    max-width: 50rem;
+
+    margin-bottom: 3.2rem;
     color: #b3b3b3;
+    font-size: 1.8rem;
+    line-height: 150%;
   }
 
   a {
-    width: 15rem;
+    width: 20rem;
     padding: 0.8rem 3rem;
     border-radius: 4rem;
-    margin-top: 1.6rem;
     border: 2px solid transparent;
 
     background: #1db954;
@@ -122,5 +127,5 @@ export const Login = styled.div`
 
 export const AccessDenied = styled.div`
   margin-top: 3.2rem;
-  color: #aa0000;
+  color: #c10;
 `
